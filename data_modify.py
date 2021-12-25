@@ -6,7 +6,6 @@ class Randnoise():
 
     def __init__(self, n_words):
         self.n_words = n_words
-        print(n_words)
         self.json_dict = {}
 
     def replace_char(self, text):

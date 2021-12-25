@@ -1,5 +1,5 @@
 from nltk.tokenize import sent_tokenize
-
+import re
 with open('data/processed_text.txt', 'w') as outfile :
     with open("data/simplewiki-latest-pages-articles.txt", "r") as infile:
         try:
@@ -8,6 +8,7 @@ with open('data/processed_text.txt', 'w') as outfile :
                      if not line.startswith("!"):
                         sentences = sent_tokenize(line)
                         for sent in sentences:
+                            sent = re.sub('\W+',' ', sent.lower())
                             if len(sent) > 75:
                                 outfile.write(sent + '\n')
         except IndexError as e:

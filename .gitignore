@@ -118,4 +118,5 @@ model*/
 model_*/
 wikiextractor/
 data/*.*
+data/**/
 !data/.gitkeep
