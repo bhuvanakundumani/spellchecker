@@ -9,7 +9,6 @@ with open('data/processed_text.txt', 'w') as outfile :
                      if not line.startswith("!"):
                         sentences = sent_tokenize(line)
                         for sent in sentences:
-                            # import ipdb; ipdb.set_trace();
                             if len(sent) > 75:
                                 outfile.write(sent + '\n')
         except IndexError as e:
