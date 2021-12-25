@@ -14,9 +14,7 @@ with open('data/processed_text.txt', 'w') as outfile :
             print(f"error in {line} ")
             print(f"error is {e}")
             pass
-
-
-
+print("Sucessfully preprocessed the files and the files are written in data/processed_text.txt")
         # try:
         #     for line in infile:
         #         #import ipdb; ipdb.set_trace();

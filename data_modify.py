@@ -1,3 +1,7 @@
+import random
+import string
+import re
+
 class RandomNoiser():
 
     def __init__(self, n_words):
