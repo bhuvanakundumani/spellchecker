@@ -1,5 +1,4 @@
 from nltk.tokenize import sent_tokenize
-from nltk.tokenize import word_tokenize
 
 with open('data/processed_text.txt', 'w') as outfile :
     with open("data/simplewiki-latest-pages-articles.txt", "r") as infile:
