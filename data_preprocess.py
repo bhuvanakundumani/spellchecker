@@ -15,17 +15,6 @@ with open('data/processed_text.txt', 'w') as outfile :
             print(f"error is {e}")
             pass
 print("Sucessfully preprocessed the files and the files are written in data/processed_text.txt")
-        # try:
-        #     for line in infile:
-        #         #import ipdb; ipdb.set_trace();
-        #         if len(line.split()) > 10: 
-        #             sentences = sent_tokenize(line)
-        #             for sent in sentences:
-        #                 if len(sent) > 5:
-        #                     outfile.write(sent + '\n')
-        # except IndexError as e:
-        #     pass
-        #     #print(e)
-    
+
 
 
