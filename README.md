@@ -12,4 +12,6 @@ To preprocess the data, run the command below. ```processed_text.txt``` gets wri
 ```
 python data_preprocess.py
 ```
+### Train and valid prep
+```data_prep_train_valid.ipynb``` has code which prepares the correct and corrupted sentences for train and valid csv
 
