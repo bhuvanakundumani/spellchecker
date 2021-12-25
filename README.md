@@ -6,3 +6,10 @@ source download_wiki_dump.sh simple
 source extract_and_clean_wiki_dump.sh data/simplewiki-latest-pages-articles.xml.bz2
 ```
 The dump is downloaded and extracted file in the .txt format in the ```data``` directory.
+
+### Preprocessing data
+To preprocess the data, run the command below. ```processed_text.txt``` gets written in ```data``` folder. 
+```
+python data_preprocess.py
+```
+
