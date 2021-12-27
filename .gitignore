@@ -120,3 +120,4 @@ wikiextractor/
 data/*.*
 data/**/
 !data/.gitkeep
+runs/
