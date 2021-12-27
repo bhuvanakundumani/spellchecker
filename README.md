@@ -8,10 +8,18 @@ source extract_and_clean_wiki_dump.sh data/simplewiki-latest-pages-articles.xml.
 The dump is downloaded and extracted file in the .txt format in the ```data``` directory.
 
 ### Preprocessing data
-To preprocess the data, run the command below. ```processed_text.txt``` gets written in ```data``` folder. 
+To preprocess the data, run the command below. ```processed_text.txt``` gets written in ```data``` folder.  
 ```
 python data_preprocess.py
 ```
 ### Train and valid prep
-```data_prep_train_valid.ipynb``` has code which prepares the correct and corrupted sentences for train and valid csv
+```data_prep_train_valid.ipynb``` has code which prepares the correct and corrupted sentences for train and valid csv/
+
+### Finetuning T5 model
+```finetuning.py``` has the code for finetuning T5 on the dataset.
+To run finetuning.py, 
+```
+python finetuning.py --output model_test --overwrite true --do_train True --do_eval True
+```
+
 
