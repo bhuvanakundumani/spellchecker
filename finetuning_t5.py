@@ -224,10 +224,10 @@ def T5Trainer(output_dir=args.output):
     logger.info(f"[Data]: Reading data...\n")
 
     train_dataset = pd.read_csv("data/final/train.csv")
-    train_dataset =train_dataset[0:1000]
+    # train_dataset =train_dataset[0:1000]
     logging.info(f"Train dataset shape is {train_dataset.shape}")
     valid_dataset = pd.read_csv("data/final/valid.csv")
-    valid_dataset = valid_dataset[0:100]
+    # valid_dataset = valid_dataset[0:100]
     logging.info(f"Valid dataset shape is {valid_dataset.shape}")
 
     # Creating the Training and Validation dataset for further creation of Dataloader
