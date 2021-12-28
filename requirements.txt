@@ -9,4 +9,5 @@ tqdm==4.62.3
 tensorboard==2.7.0
 sentencepiece==0.1.96
 scikit-learn==0.24.2
-matplotlib
+matplotlib==3.3.4
+rouge_score==0.0.4
