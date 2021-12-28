@@ -22,8 +22,8 @@ parser.add_argument("--output", default=None, type=str, required=True, help="Out
 parser.add_argument("--overwrite", default=False, type=bool, help="Set it to True to overwrite output directory")
 
 #parser.add_argument("--modeltype", default=None, type=str, help="model used [bert ]", required=True)
-parser.add_argument("--max_source_text_length", default=512, type=int, help="The maximum total input sequence length after WordPiece tokenization. Sequences longer than this will be truncated, and sequences shorter than this will be padded.")
-parser.add_argument("--max_target_text_length", default=50, type=int, help="The maximum total input sequence length after WordPiece tokenization. Sequences longer than this will be truncated, and sequences shorter than this will be padded.")
+parser.add_argument("--max_source_text_length", default=512, type=int, help="max length of source text")
+parser.add_argument("--max_target_text_length", default=128, type=int, help="max length of target text")
 parser.add_argument("--do_lower_case", action='store_true', help="Set this flag if you are using an uncased model.")
 
 parser.add_argument("--train_batch_size", default=8, type=int, help="Train batch size for training.")
@@ -182,7 +182,7 @@ def validate(epoch, tokenizer, model, device, loader):
             generated_ids = model.generate(
                 input_ids = ids,
                 attention_mask = mask, 
-                max_length=150, 
+                max_length=128, 
                 num_beams=2,
                 repetition_penalty=2.5, 
                 length_penalty=1.0, 
