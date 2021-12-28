@@ -162,7 +162,7 @@ def train(epoch, tokenizer, model, device, loader, optimizer):
 
         if _ % 10 == 0:
             
-            logging.info(str(epoch), str(_), str(loss))
+            logger.info(str(epoch), str(_), str(loss))
 
         optimizer.zero_grad()
         loss.backward()

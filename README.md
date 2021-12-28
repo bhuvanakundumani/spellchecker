@@ -18,8 +18,8 @@ python data_preprocess.py
 ### Finetuning T5 model
 ```finetuning.py``` has the code for finetuning T5 on the dataset.
 To run finetuning.py, 
-```
-python finetuning.py --output model_test --overwrite true --do_train True --do_eval True
+```True
+python finetuning_t5.py --output model_dec28 --overwrite true --do_train True --do_eval True
 ```
 
 
