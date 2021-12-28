@@ -88,7 +88,7 @@ def set_seed(seed):
 
 set_seed(args.seed)
 from torch.utils.tensorboard import SummaryWriter
-writer = SummaryWriter('runs/Finetuning_experiments')
+writer = SummaryWriter('runs/finetuning_experiments')
 
 
 
