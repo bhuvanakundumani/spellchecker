@@ -22,4 +22,18 @@ To run finetuning.py,
 python finetuning_t5.py --output model_dec28 --overwrite true --do_train True --do_eval True
 ```
 
+### REST - API
+The spellchecker model is deployed as REST - API - API live at ```0.0.0.0:8000``` and endpoint : ```predict```
+```
+python api.py
+```
+#### cURL Request 
 
+```
+curl -X POST http://0.0.0.0:8000/predict -H 'Content-Type: application/json' -d '{ "text": "chrims is celibrated on decmber 25 evry ear" }'
+```
+
+#### Output 
+```
+{"result":"christmas is celebrated on december 25 every year"}
+```

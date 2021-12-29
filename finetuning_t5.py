@@ -236,7 +236,7 @@ def T5Trainer(output_dir=args.output):
     logging.info(f"Valid dataset shape is {valid_dataset.shape}")
 
     if args.do_debug:
-        train_dataset =train_dataset[0:1000]
+        train_dataset = train_dataset[0:1000]
         valid_dataset = valid_dataset[0:100]
 
     # Creating the Training and Validation dataset for further creation of Dataloader
