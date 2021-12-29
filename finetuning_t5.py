@@ -56,12 +56,15 @@ parser.add_argument('--gradient_accumulation_steps', type=int, default=1,
                         help="Number of updates steps to accumulate before performing a backward/update pass.")
 parser.add_argument('--do_train', type=str, default=False, help="set it to True to train")
 parser.add_argument('--do_eval', type=str, default=False, help="set it to True to train")
+parser.add_argument('--do_debug', type=str, default=False, help="set it to True to debug with a smaller dataset")
+
 parser.add_argument('--seed', type=int, default=42, help="set the seed for reproducibility")
 
 args = parser.parse_args()
 
-if os.path.exists(args.output) and os.listdir(args.output) and not args.overwrite:
-    raise ValueError("Output directory ({}) already exists and is not empty. Set the overwrite flag to overwrite".format(args.output))
+if os.path.exists(args.output) and os.listdir(args.output):
+    if not args.overwrite and args.do_train:
+        raise ValueError("Output directory ({}) already exists and is not empty. Set the overwrite flag to overwrite".format(args.output))
 if not os.path.exists(args.output):
     os.makedirs(args.output)
 
@@ -144,7 +147,7 @@ class CustomDataset(Dataset):
     
 def train(epoch, tokenizer, model, device, loader, optimizer):
     model.train()
-    for _, data in enumerate(loader, 0):
+    for n, data in enumerate(loader, 0):
         y = data["target_ids"].to(device, dtype=torch.long)
         y_ids = y[:, :-1].contiguous()
         lm_labels = y[:, 1:].clone().detach()
@@ -160,21 +163,20 @@ def train(epoch, tokenizer, model, device, loader, optimizer):
         )
         loss = outputs[0]
 
-        if _ % 10 == 0:
-            
-            logger.info(str(epoch), str(_), str(loss))
-
-        optimizer.zero_grad()
+        if n % 1000 == 0:
+            logger.info(f"Epoch number is {epoch} and loss is {loss}")
+        
         loss.backward()
         optimizer.step()
+        model.zero_grad()
 
 
-def validate(epoch, tokenizer, model, device, loader):
+def validate(tokenizer, model, device, loader):
     model.eval()
     predictions = []
     actuals = []
     with torch.no_grad():
-        for _, data in enumerate(loader, 0):
+        for n, data in enumerate(loader, 0):
             y = data['target_ids'].to(device, dtype = torch.long)
             ids = data['source_ids'].to(device, dtype = torch.long)
             mask = data['source_mask'].to(device, dtype = torch.long)
@@ -189,12 +191,12 @@ def validate(epoch, tokenizer, model, device, loader):
                 early_stopping=True
                 )
             preds = [tokenizer.decode(g, skip_special_tokens=True, clean_up_tokenization_spaces=True) for g in generated_ids]
-            target = [tokenizer.decode(t, skip_special_tokens=True, clean_up_tokenization_spaces=True)for t in y]
-            if _%10==0:
-                logger.info("Completed {_}")
+            source = [tokenizer.decode(t, skip_special_tokens=True, clean_up_tokenization_spaces=True)for t in ids]
+            if n%100==0:
+                logger.info(f"Completed {n}")
 
             predictions.extend(preds)
-            actuals.extend(target)
+            actuals.extend(source)
     return predictions, actuals
 
 def T5Trainer(output_dir=args.output):
@@ -210,25 +212,32 @@ def T5Trainer(output_dir=args.output):
     torch.backends.cudnn.deterministic = True
 
     # logging
-    logger.info(f"""[Model]: Loading t5 base...\n""")
+    logger.info(f"""[Model]: Loading t5 base tokenizer\n""")
 
     # tokenzier for encoding the text
     tokenizer = T5Tokenizer.from_pretrained("t5-base")
+    if args.do_train:
+        # Defining the model. We are using t5-base model and added a Language model layer on top for generation of Summary.
+        # Further this model is sent to device (GPU/TPU) for using the hardware.
+        logger.info(f"""[Model]: Loading t5 base model for finetuning\n""")
 
-    # Defining the model. We are using t5-base model and added a Language model layer on top for generation of Summary.
-    # Further this model is sent to device (GPU/TPU) for using the hardware.
-    model = T5ForConditionalGeneration.from_pretrained("t5-base")
-    model = model.to(device)
+        model = T5ForConditionalGeneration.from_pretrained("t5-base")
+        model = model.to(device)
 
     # logging
     logger.info(f"[Data]: Reading data...\n")
 
     train_dataset = pd.read_csv("data/final/train.csv")
-    # train_dataset =train_dataset[0:1000]
+   
     logging.info(f"Train dataset shape is {train_dataset.shape}")
     valid_dataset = pd.read_csv("data/final/valid.csv")
-    # valid_dataset = valid_dataset[0:100]
+
+   
     logging.info(f"Valid dataset shape is {valid_dataset.shape}")
+
+    if args.do_debug:
+        train_dataset =train_dataset[0:1000]
+        valid_dataset = valid_dataset[0:100]
 
     # Creating the Training and Validation dataset for further creation of Dataloader
     training_set = CustomDataset(
@@ -261,39 +270,36 @@ def T5Trainer(output_dir=args.output):
     training_loader = DataLoader(training_set, **train_params)
     val_loader = DataLoader(val_set, **val_params)
 
-    # Defining the optimizer that will be used to tune the weights of the network in the training session.
-    optimizer = torch.optim.Adam(
-        params=model.parameters(), lr=args.lr
-    )
+    
 
     # Training loop
-    logger.info(f"[Initiating Fine Tuning]...\n")
+    
+    if args.do_train: 
+        # Defining the optimizer that will be used to tune the weights of the network in the training session.
+        optimizer = torch.optim.Adam(
+            params=model.parameters(), lr=args.lr
+        )
+        logger.info(f"[Initiating Fine Tuning]...\n")
+        for epoch in range(args.epochs):
+            train(epoch, tokenizer, model, device, training_loader, optimizer)
 
-    for epoch in range(args.epochs):
-        train(epoch, tokenizer, model, device, training_loader, optimizer)
-
-    logger.info(f"[Saving Model]...\n")
-    # Saving the model after training
-    #path = os.path.join(output_dir, "model_files")
-    model.save_pretrained(output_dir)
-    tokenizer.save_pretrained(output_dir)
-
+        logger.info(f"[Saving Model]...\n")
+        # Saving the model after training
+        #path = os.path.join(output_dir, "model_files")
+        model.save_pretrained(output_dir)
+        tokenizer.save_pretrained(output_dir)
+        logger.info(f"""[Model] Model saved @ {output_dir}\n""")
     # evaluating test dataset
-    logger.info(f"[Initiating Validation]...\n")
-    for epoch in range(args.epochs):
-        predictions, actuals = validate(epoch, tokenizer, model, device, val_loader)
+    if args.do_eval:
+        logger.info(f"""[Model]: Loading t5 base model from {output_dir} for validation\n""")
+        model = T5ForConditionalGeneration.from_pretrained(output_dir)
+        model.to(device)
+        logger.info(f"[Initiating Validation]...\n")
+        predictions, actuals = validate(tokenizer, model, device, val_loader)
         final_df = pd.DataFrame({"Generated Text": predictions, "Actual Text": actuals})
         final_df.to_csv(os.path.join(output_dir, "predictions.csv"))
-
-    #console.save_text(os.path.join(output_dir, "logs.txt"))
-
-    logger.info(f"[Validation Completed.]\n")
-    logger.info(
-        f"""[Model] Model saved @ {output_dir}\n"""
-    )
-    logger.info(
-        f"""[Validation] Generation on Validation data saved @ {os.path.join(output_dir,'predictions.csv')}\n"""
-    )
+        logger.info(f"[Validation Completed.]\n")
+        logger.info(f"""[Validation] Generation on Validation data saved @ {os.path.join(output_dir,'predictions.csv')}\n""")
 
 
 T5Trainer(output_dir=args.output)
