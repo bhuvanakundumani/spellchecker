@@ -1,6 +1,6 @@
 from transformers import T5ForConditionalGeneration, AutoTokenizer
 # needs python 3.7 to work ! Uncomment gradio related commands to deploy on gradio
-#import gradio as gr
+import gradio as gr
 
 model_folder = 'model_dec28'
 tokenizer = AutoTokenizer.from_pretrained(model_folder)
@@ -19,11 +19,11 @@ def correct(inputs):
     return res
 
 
-# app_inputs = gr.inputs.Textbox(lines=3, placeholder="Enter a grammatically incorrect sentence here...")
+app_inputs = gr.inputs.Textbox(lines=3, placeholder="Enter a grammatically incorrect sentence here...")
 
-# interface = gr.Interface(fn=correct,
-#                         inputs=app_inputs,
-#                         outputs='text',
-#                         title='Hi there, I\'m spell checker')
+interface = gr.Interface(fn=correct,
+                        inputs=app_inputs,
+                        outputs='text',
+                        title='Welcome to spell checker using T5')
 
-# interface.launch(share=True)
+interface.launch(share=True)
