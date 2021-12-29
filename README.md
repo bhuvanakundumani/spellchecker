@@ -49,3 +49,12 @@ curl -X POST http://0.0.0.0:8000/predict -H 'Content-Type: application/json' -d 
 ```
 {"result":"christmas is celebrated on december 25 every year"}
 ```
+### Gradio 
+Uncomment the lines in ```gradio_predict.py``` and run 
+```
+python gradio_predict.py
+```
+You will get the local URL and public URL for the gradio app. Click on the links and you will be able to use the Gradio app. 
+
+![gradio output image](/img/gradio.png)
+
