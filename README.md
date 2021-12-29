@@ -1,3 +1,15 @@
+### Spellchecker using T5 transformer
+
+T5 Base is finetuned with data from simple wikipedia for building a simple spellchecker. 
+
+### Environment set up
+```
+python3 -m virtualenv env
+source env/bin/activate
+pip install --upgrade pip
+pip install -r requirements.txt
+```
+
 ### Downloading data
 To download simple data dump and extract from simple wikipedia, use the following commands
 
